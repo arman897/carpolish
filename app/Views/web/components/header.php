@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A-one Car Polish</title>
+  <title>A-one Car Polish [Pabitra]</title>
 
   <!-- Bootstrap (optional, for your global site styles) -->
   <link href="<?= base_url() ?>public/assets/web/css/bootstrap-bundle-min.css" rel="stylesheet">
@@ -34,7 +34,7 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    
+
   <link rel="stylesheet" href="<?= base_url() ?>public/assets/web/css/style.css" />
   <!-- <script src="script.js"></script> -->
 
