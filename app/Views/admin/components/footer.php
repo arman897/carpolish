@@ -2,7 +2,7 @@
 
   <footer class="main-footer">
 
-      <strong>Copyright &copy; <?= date('Y') ?> <a href="https://bntechsolution.com/" target="_blank">BN Tech Solution</a>.</strong>
+      <strong>Copyright &copy; <?= date('Y') ?> <a href="https://bntechsolution.com/" target="_blank">a-onebox</a>.</strong>
 
       All rights reserved.
 

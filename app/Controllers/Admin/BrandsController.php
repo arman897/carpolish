@@ -8,11 +8,21 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class BrandsController extends BaseController
 {
+
+
+    // ===  Brand Listing Function
     public function index()
     {
-        echo 'list';
+        $brandModel = new BrandsModel();
+        $data['brands'] = $brandModel->findAll();
+
+        return view('admin/brands/index', $data);
     }
-    public function create()
+
+
+
+    //   Creation function
+     public function create()
     {
 
         helper('form');
@@ -86,4 +96,96 @@ class BrandsController extends BaseController
             return view('admin/brands/create');
         }
     }
+
+
+ //   Editing function
+   public function edit($id)
+{
+    $brandModel = new BrandsModel();
+    $request = service('request');
+
+    // Fetch Brand
+    $brand = $brandModel->find($id);
+
+    if (!$brand) {
+        return redirect()->to('admin/brands')->with('error', 'Brand not found');
+    }
+
+    // ⭐ IF POST → Handle Update
+    if ($request->getMethod() === 'POST') {
+
+        $rules = [
+            'name' => 'required|min_length[2]',
+            'slug' => 'required'
+        ];
+
+        if ($request->getFile('logo')->isValid()) {
+            $rules['logo'] = 'uploaded[logo]|max_size[logo,2048]|mime_in[logo,image/png,image/jpg,image/jpeg,image/webp]';
+        }
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->with('invalid_creds', [
+                'type'   => 'danger',
+                'errors' => $this->validator->getErrors()
+            ])->withInput();
+        }
+
+        // ⭐ UPDATE DATA
+        $updateData = [
+            'name' => $request->getPost('name'),
+            'slug' => $this->create_slug($request->getPost('slug'))
+        ];
+
+        // ⭐ LOGO UPLOAD
+        $file = $request->getFile('logo');
+
+        if ($file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            $file->move('uploads/brands', $newName);
+
+            // delete old file
+            if (!empty($brand['logo']) && file_exists("uploads/brands/" . $brand['logo'])) {
+                unlink("uploads/brands/" . $brand['logo']);
+            }
+
+            $updateData['logo'] = $newName;
+        }
+
+        // ⭐ SAVE UPDATE
+        $brandModel->update($id, $updateData);
+
+        return redirect()->to('/admin/brands')->with('success', 'Brand Updated Successfully');
+    }
+
+    // ⭐ IF GET → Show Edit Page
+    return view('admin/brands/edit', ['brand' => $brand]);
+}
+
+
+
+    
+ //   Deleting function
+    public function delete($id)
+    {
+        $brandModel = new BrandsModel();
+        $brand = $brandModel->find($id);
+
+        if (!$brand) {
+            return redirect()->to('admin/brands')->with('error', 'Brand not found');
+        }
+
+        // delete logo
+        if (!empty($brand['logo']) && file_exists("uploads/brands/" . $brand['logo'])) {
+            unlink("uploads/brands/" . $brand['logo']);
+        }
+
+        $brandModel->delete($id);
+
+        return redirect()->to('admin/brands')->with('success', 'Brand Deleted Successfully');
+    }
+
+
+    
+
+   
 }

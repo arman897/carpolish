@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class BrandsModel extends Model
 {
     protected $table            = 'brands';
-    protected $primaryKey       = 'id';
+    protected $primaryKey       = 'brand_id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;

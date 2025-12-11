@@ -47,6 +47,11 @@ $routes->group('admin/', function ($routes) {
     $routes->group('brands', function ($routes) {
         $routes->get('/', 'Admin\BrandsController::index');
         $routes->match(['get', 'post'], 'create/', 'Admin\BrandsController::create');
+        $routes->match(['get', 'post'], 'edit/(:num)', 'Admin\BrandsController::edit/$1');
+        // $routes->match(['get', 'post'], 'update/(:num)', 'Admin\BrandsController::update/$1');
+        // $routes->get('admin/brands/edit/(:num)', 'Admin\BrandsController::edit/$1');
+        // $routes->post('admin/brands/update/(:num)', 'Admin\BrandsController::update/$1');
+        $routes->get('delete/(:num)', 'Admin\BrandsController::delete/$1');
     });
     // -------------------------------------------End Brands-------------------------------------------//
 

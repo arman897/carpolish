@@ -39,7 +39,7 @@
 
 
 
-                                <td><a href="<?= base_url("/admin/banners/delete/" . $p['id']) ?>" class="text-white"
+                                <td><a href="<?= base_url("/admin/banners/delete/" . $p['brand_id']) ?>" class="text-white"
                                         onclick="return confirm('Are you sure to delete this ?')"><button
                                             class="btn-danger btn">Delete</button></a></td>
                             </tr>
