@@ -55,4 +55,23 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = service('session');
     }
+
+
+
+    function create_slug($string)
+    {
+        // Convert to lowercase
+        $slug = strtolower($string);
+
+        // Replace non letter or digits by -
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', $slug);
+
+        // Trim dashes
+        $slug = trim($slug, '-');
+
+        // Remove multiple consecutive dashes
+        $slug = preg_replace('/-+/', '-', $slug);
+
+        return $slug;
+    }
 }

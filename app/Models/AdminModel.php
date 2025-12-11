@@ -11,7 +11,12 @@ class AdminModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
     protected $protectFields = true;
-    protected $allowedFields = ['username', 'password'];
+    protected $allowedFields = [
+        'username',
+        'email',
+        'phone',
+        'password'
+    ];
 
 
 
@@ -20,7 +25,7 @@ class AdminModel extends Model
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    
+
 
 
     protected $validationRules    = [];
