@@ -16,9 +16,45 @@ $routes->get('/blogs', 'Home::blogs');
 $routes->get('/before_after', 'Home::before_after');
 
 // Admin login/dashboard routes
-$routes->match(['get', 'post'], '/admin', 'Admin\LoginController::log_in');
-$routes->match(['get', 'post'], 'admin/dashboard', 'Admin\DashboardController::dashboard');
-$routes->get('admin/logout', 'Admin\DashboardController::logout');
+
+
+
+$routes->group('admin/', function ($routes) {
+    $routes->match(['get', 'post'], '/', 'Admin\LoginController::log_in');
+    $routes->match(['get', 'post'], 'dashboard', 'Admin\DashboardController::dashboard');
+
+
+    // -------------------------------------------Blogs-------------------------------------------//
+
+    $routes->group('blogs', function ($routes) {
+        $routes->get('/', 'AdminController\BlogController::index');
+    });
+
+    // -------------------------------------------End Blogs-------------------------------------------//
+
+
+
+    // -------------------------------------------Slider-------------------------------------------//
+    $routes->group('sliders', function ($routes) {
+        $routes->get('/', 'Admin\SliderController::index');
+        $routes->match(['get', 'post'], 'create/', 'Admin\SliderController::create');
+    });
+    // -------------------------------------------End Slider-------------------------------------------//
+
+
+
+    // -------------------------------------------Brands-------------------------------------------//
+    $routes->group('brands', function ($routes) {
+        $routes->get('/', 'Admin\BrandsController::index');
+        $routes->match(['get', 'post'], 'create/', 'Admin\BrandsController::create');
+    });
+    // -------------------------------------------End Brands-------------------------------------------//
+
+
+
+    $routes->get('logout', 'Admin\DashboardController::logout');
+});
+
 
 // Contact messages
 $routes->get('admin/Message', 'Admin\ContactController::message');
@@ -27,22 +63,41 @@ $routes->get('admin/message/delete/(:num)', 'Admin\ContactController::delete/$1'
 // -----------------------------
 // Admin Blogs Routes
 // -----------------------------
-$routes->group('admin/blogs', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
 
-    // List all blogs
-    $routes->match(['get', 'post'], '/', 'BlogsController::blogs', ['as' => 'admin.blogs.index']);
 
-    // Create blog
-    $routes->get('create', 'BlogsController::create', ['as' => 'admin.blogs.create']);
-    $routes->post('create', 'BlogsController::create');
 
-    // Edit blog
-    $routes->get('edit/(:num)', 'BlogsController::edit/$1', ['as' => 'admin.blogs.edit']);
-    $routes->post('edit/(:num)', 'BlogsController::edit/$1');
 
-    // Delete blog
-    $routes->get('delete/(:num)', 'BlogsController::delete/$1', ['as' => 'admin.blogs.delete']);
-});
+
+
+
+
+// $routes->group('admin/blogs', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
+
+//     // List all blogs
+//     $routes->match(['get', 'post'], '/', 'BlogsController::blogs', ['as' => 'admin.blogs.index']);
+
+//     // Create blog
+//     $routes->get('create', 'BlogsController::create', ['as' => 'admin.blogs.create']);
+//     $routes->post('create', 'BlogsController::create');
+
+//     // Edit blog
+//     $routes->get('edit/(:num)', 'BlogsController::edit/$1', ['as' => 'admin.blogs.edit']);
+//     $routes->post('edit/(:num)', 'BlogsController::edit/$1');
+
+//     // Delete blog
+//     $routes->get('delete/(:num)', 'BlogsController::delete/$1', ['as' => 'admin.blogs.delete']);
+// });
+
+
+
+
+
+
+
+
+
+
+
 
 // -----------------------------
 // Public Blog Routes (using slug)
@@ -57,3 +112,14 @@ $routes->get('blogs/(:segment)', 'Admin\BlogsController::view/$1');
 // Frontend blogs listing (if needed)
 $routes->get('blogs/', 'Home::blogs');
 $routes->get('blogs/show/(:num)', 'Home::show/$1');
+
+
+
+
+
+// -----------------------------
+// Admin Blogs Routes
+// -----------------------------
+$routes->group('api/', ['namespace' => 'App\Controllers\Api'], function ($routes) {
+    $routes->post('login', 'LoginController::log_in');
+});

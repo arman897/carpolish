@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A-one Car Polish [Pabitra]</title>
+  <title>A-one Car Polish</title>
 
   <!-- Bootstrap (optional, for your global site styles) -->
   <link href="<?= base_url() ?>public/assets/web/css/bootstrap-bundle-min.css" rel="stylesheet">

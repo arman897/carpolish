@@ -96,7 +96,7 @@
         </div>
 
         <div class="swiper-slide">
-          <img src="<?= base_url() ?>public/assets/web/img/newimg/banner2.png" alt="Mercedes Detailing" />
+          <img src="<?= base_url() ?>public/assets/web/img/newimg/banner3.png" alt="Mercedes Detailing" />
           <div class="banner-center">
             <h2><span>Best Car Polish Service In Newtown Kolkata</span> </h2>
             <p>Luxury Inside • Perfection Outside</p>
