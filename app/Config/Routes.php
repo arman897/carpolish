@@ -35,10 +35,16 @@ $routes->group('admin/', function ($routes) {
 
 
     // -------------------------------------------Slider-------------------------------------------//
-    $routes->group('sliders', function ($routes) {
-        $routes->get('/', 'Admin\SliderController::index');
-        $routes->match(['get', 'post'], 'create/', 'Admin\SliderController::create');
-    });
+    // -------------------------------------------Slider-------------------------------------------//
+    $routes->get('sliders', 'Admin\SliderController::index');
+    $routes->match(['get', 'post'], 'sliders/create', 'Admin\SliderController::create');
+    $routes->match(['get', 'post'], 'sliders/edit/(:num)', 'Admin\SliderController::edit/$1');
+    $routes->post('sliders/delete/(:num)', 'Admin\SliderController::delete/$1');
+
+
+
+
+
     // -------------------------------------------End Slider-------------------------------------------//
 
 
