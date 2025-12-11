@@ -98,95 +98,92 @@ class SliderController extends BaseController
 
 
     /**
- * Show edit form (GET) / Update slider (POST)
- */
-public function edit($id = null)
-{
-    if ($id === null) {
-        return redirect()->to(route_to('admin.slider.index'))->with('error', 'Invalid slider ID.');
-    }
-
-    $slider = $this->sliderModel->find($id);
-    if (! $slider) {
-        return redirect()->to(route_to('admin.slider.index'))->with('error', 'Slider not found.');
-    }
-
-    // If GET -> show form
-    if ($this->request->getMethod() !== 'POST') {
-        return view('admin/slider/edit', ['slider' => $slider]);
-    }
-
-    // POST -> handle update
-    $rules = [
-        'title'        => 'permit_empty|max_length[255]',
-        'subtitle'     => 'permit_empty|max_length[255]',
-        'link'         => 'permit_empty|valid_url',
-        'is_active'    => 'permit_empty|in_list[0,1]',
-        'banner_image' => 'is_image[banner_image]|max_size[banner_image,4096]|mime_in[banner_image,image/jpg,image/jpeg,image/png,image/webp]',
-        'remove_image' => 'permit_empty|in_list[0,1]',
-    ];
-
-    if (! $this->validate($rules)) {
-        return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-    }
-
-    $data = [
-        'title'     => $this->request->getPost('title'),
-        'subtitle'  => $this->request->getPost('subtitle'),
-        'link'      => $this->request->getPost('link'),
-        'is_active' => $this->request->getPost('is_active') ? 1 : 0,
-    ];
-
-    // Ensure upload directory exists
-    if (! is_dir($this->uploadPath)) {
-        if (! @mkdir($this->uploadPath, 0755, true)) {
-            log_message('error', 'Could not create upload directory: ' . $this->uploadPath);
-            return redirect()->back()->withInput()->with('error', 'Unable to create upload directory.');
+     * Show edit form (GET) / Update slider (POST)
+     */
+    public function edit($id = null)
+    {
+        if ($id === null) {
+            return redirect()->to(route_to('admin.slider.index'))->with('error', 'Invalid slider ID.');
         }
-    }
 
-    // Handle new uploaded image (replace old one)
-    $file = $this->request->getFile('banner_image');
-    if ($file && $file->isValid() && ! $file->hasMoved()) {
-        $newName = $file->getRandomName();
-        try {
-            $file->move($this->uploadPath, $newName);
-            $data['banner_image'] = 'uploads/sliders/' . $newName;
+        $slider = $this->sliderModel->find($id);
+        if (!$slider) {
+            return redirect()->to(route_to('admin.slider.index'))->with('error', 'Slider not found.');
+        }
 
-            // Delete previous file (if exists and within uploads/sliders)
-            if (! empty($slider['banner_image'])) {
+        // GET -> show the edit form
+        if ($this->request->getMethod() !== 'POST') {
+            return view('admin/slider/edit', ['slider' => $slider]);
+        }
+
+        // POST -> handle update
+        $rules = [
+            'title' => 'permit_empty|max_length[255]',
+            'subtitle' => 'permit_empty|max_length[255]',
+            'link' => 'permit_empty|valid_url',
+            'is_active' => 'permit_empty|in_list[0,1]',
+            'banner_image' => 'is_image[banner_image]|max_size[banner_image,4096]|mime_in[banner_image,image/jpg,image/jpeg,image/png,image/webp]',
+            'remove_image' => 'permit_empty|in_list[0,1]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $data = [
+            'title' => $this->request->getPost('title'),
+            'subtitle' => $this->request->getPost('subtitle'),
+            'link' => $this->request->getPost('link'),
+            'is_active' => $this->request->getPost('is_active') ? 1 : 0,
+        ];
+
+        // Ensure upload dir exists
+        if (!is_dir($this->uploadPath)) {
+            if (!@mkdir($this->uploadPath, 0755, true)) {
+                log_message('error', 'Could not create upload directory: ' . $this->uploadPath);
+                return redirect()->back()->withInput()->with('error', 'Unable to create upload directory.');
+            }
+        }
+
+        // Handle new upload (replace old image)
+        $file = $this->request->getFile('banner_image');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            try {
+                $file->move($this->uploadPath, $newName);
+                $data['banner_image'] = 'uploads/sliders/' . $newName;
+
+                // Delete previous file if present
+                if (!empty($slider['banner_image'])) {
+                    $old = FCPATH . $slider['banner_image'];
+                    if (is_file($old)) {
+                        @unlink($old);
+                    }
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Slider upload failed on update: ' . $e->getMessage());
+                return redirect()->back()->withInput()->with('error', 'Failed to upload new image.');
+            }
+        }
+
+        // If user requested removal of existing image
+        if ($this->request->getPost('remove_image')) {
+            if (!empty($slider['banner_image'])) {
                 $old = FCPATH . $slider['banner_image'];
                 if (is_file($old)) {
                     @unlink($old);
                 }
             }
-        } catch (\Exception $e) {
-            log_message('error', 'Slider upload failed on update: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Failed to upload new image.');
+            $data['banner_image'] = null;
         }
-    }
 
-    // Optional: remove existing image if checkbox/toggle sent
-    if ($this->request->getPost('remove_image')) {
-        if (! empty($slider['banner_image'])) {
-            $old = FCPATH . $slider['banner_image'];
-            if (is_file($old)) {
-                @unlink($old);
-            }
+        $updated = $this->sliderModel->update($id, $data);
+        if ($updated === false) {
+            return redirect()->back()->withInput()->with('error', 'Failed to update slider.');
         }
-        // set to null or empty depending on DB column nullability
-        $data['banner_image'] = null;
+
+        return redirect()->to(site_url('admin/sliders'))->with('success', 'Slider updated successfully.');
     }
-
-    $updated = $this->sliderModel->update($id, $data);
-    if ($updated === false) {
-        return redirect()->back()->withInput()->with('error', 'Failed to update slider.');
-    }
-
-    return redirect()->to(site_url('admin/sliders'))->with('success', 'Slider updated successfully.');
-}
-
-
 
     /**
      * Delete a slider

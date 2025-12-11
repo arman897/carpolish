@@ -32,7 +32,7 @@
     <?php $id = $slider['id'] ?? null; ?>
     <form id="sliderEditForm"
           method="POST"
-          action="<?= base_url('admin/sliders/update/' . (int)$id) ?>"
+          action="<?= base_url('admin/sliders/edit/' . (int)$id) ?>"
           enctype="multipart/form-data">
         <?= csrf_field() ?>
         <!-- If your controller uses method spoofing for PUT, uncomment -->
